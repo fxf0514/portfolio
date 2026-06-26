@@ -1,0 +1,37 @@
+# ===== 设计源文件（不放入版本控制）=====
+assets/源文件/
+assets/source/
+*.psd
+*.ai
+*.sketch
+*.fig
+*.xd
+
+# ===== 视频文件（太大，建议用外部托管）=====
+assets/images/*.mp4
+assets/images/*.avi
+assets/images/*.mov
+assets/images/*.wmv
+
+# ===== Python 缓存 =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+portfolio-serve.py
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 编辑器 =====
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===== 备份目录 =====
+portfolio-html-dark-backup-*/

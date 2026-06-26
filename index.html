@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>凤飞花香 — 个人设计作品集</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+</head>
+<body>
+
+  <!-- 动态渐变背景第三层 -->
+  <div class="bg-glow-layer"></div>
+
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <a href="index.html" class="navbar__logo"><span>DESIGN PORTFOLIO</span></a>
+    <ul class="navbar__links">
+      <li><a href="works.html">作品</a></li>
+      <li><a href="about.html">关于</a></li>
+    </ul>
+    <button class="navbar__hamburger" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero hero--left">
+    <!-- 背景图 -->
+    <div class="hero__bg-img"></div>
+    <!-- 遮罩层 -->
+    <div class="hero__overlay"></div>
+
+    <div class="hero__content fade-up">
+      <div class="hero__label">PORTFOLIO</div>
+      <h1 class="hero__title">专注用设计解决问题<br>让设计更有温度</h1>
+      <p class="hero__subtitle">我是范喜凤，深耕 UI 设计、手绘插画与三维创作。<br>持续探索 AI 与设计的融合边界。偏爱有逻辑的画面、有温度的表达。<br>以理性构建设计秩序，以诗意赋予作品灵魂。</p>
+      <div class="hero__buttons">
+        <a href="works.html" class="btn btn--primary">浏览作品</a>
+        <a href="about.html" class="btn btn--outline">关于我</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 精选作品 -->
+  <section class="section bg-glow" style="padding-top: 120px;">
+    <div class="container">
+      <div class="fade-up">
+        <div class="section__label">Featured Works</div>
+        <h2 class="section__title">精选作品</h2>
+      </div>
+      <div class="featured__grid">
+
+        <a href="work-detail.html" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-energy-01.jpg" alt="能源管理系统" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">源网荷储一体化能源管理工业互联网平台</h3>
+            <p class="work-card__meta">多端应用</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=serviceDesk" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-railway-09.jpeg" alt="车站智能服务台" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">车站智能服务台</h3>
+            <p class="work-card__meta">模型</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=book" class="work-card fade-up" data-category="ai">
+          <div class="work-card__cover">
+            <img src="assets/images/AI-book-01.png" alt="读书笔记知识图谱" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">AI 应用</span>
+            <h3 class="work-card__title">读书笔记知识图谱</h3>
+            <p class="work-card__meta">AI 辅助</p>
+          </div>
+        </a>
+
+      </div>
+      <div class="fade-up" style="text-align:center;margin-top:64px;">
+        <a href="works.html" class="link-arrow" style="font-size:1.05rem;">查看全部作品 →</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- 关于简短 -->
+  <section class="section bg-glow">
+    <div class="container">
+      <div class="about-brief fade-up">
+        <div class="about-page__avatar fade-up">
+        <img src="assets/images/touxiang2.png" alt="范喜凤头像" style="width:100%;height:100%;object-fit:cover;">
+      </div>
+        <div class="about-brief__text">
+          <h3>关于范喜凤</h3>
+          <p>一名热爱设计的创作者，专注于 UI 设计、品牌视觉和插画创作。相信设计是解决问题的过程，也是表达情感的语言。每一个项目都是一次新的探索。</p>
+          <a href="about.html" class="link-arrow">了解更多 →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+   
+      <p class="footer__copy">© 2026 范喜凤 · All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox__close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" onclick="lbNav(-1)">‹</button>
+    <img class="lightbox__img" id="lightbox-img" src="" alt="预览">
+    <button class="lightbox__nav lightbox__nav--next" onclick="lbNav(1)">›</button>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    let lbImgs = [], lbIdx = 0;
+    function openLightbox(imgs, idx) {
+      lbImgs = imgs; lbIdx = idx;
+      lbImg.src = imgs[idx].src;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+    function lbNav(d) { lbIdx = (lbIdx + d + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx].src; }
+    document.querySelectorAll('[data-lightbox]').forEach((img, i) => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => {
+        const all = [...document.querySelectorAll('[data-lightbox]')];
+        openLightbox(all, all.indexOf(img));
+      });
+    });
+    lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbNav(-1);
+      if (e.key === 'ArrowRight') lbNav(1);
+    });
+  </script>
+</body>
+</html>

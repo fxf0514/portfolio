@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品 — 凤飞花香</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+  <!-- 动态渐变背景第三层 -->
+  <div class="bg-glow-layer"></div>
+
+  <!-- 导航栏 -->
+  <nav class="navbar scrolled" style="background:rgba(13,13,13,0.94);backdrop-filter:blur(16px);box-shadow:0 1px 0 var(--border);">
+    <a href="index.html" class="navbar__logo"><span>DESIGN PORTFOLIO</span></a>
+    <ul class="navbar__links" style="display:flex;gap:40px;list-style:none;">
+      <li><a href="works.html" style="color:#FFFFFF;font-weight:400;">作品</a></li>
+      <li><a href="about.html">关于</a></li>
+    </ul>
+    <button class="navbar__hamburger" aria-label="菜单" style="display:none;">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- 页面标题 -->
+  <div class="page-header" >
+    <div class="container">
+      <div class="fade-up">
+        <h1 class="page-header__title" style="color: #FFFFFF;">作品展示</h1>
+        <p class="page-header__desc">相信设计是解决问题的过程，也是表达情感的语言。每一个项目都是一次新的探索。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 筛选 + 网格 -->
+  <section class="section bg-glow" style="padding-top:20px;">
+    <div class="container">
+      <div class="filter-bar fade-up">
+        
+        <button class="tag tag--active" data-filter="ui">UI 设计</button>
+        <button class="tag" data-filter="ProductCatalog">宣传物料</button>
+        <button class="tag" data-filter="illustration">插画</button>
+        <button class="tag" data-filter="3d">3D 模型</button>
+        <button class="tag" data-filter="ai">AI 应用</button>
+      </div>
+
+      <div class="works-grid">
+
+        <!-- UI 设计 -->
+        <a href="work-detail.html?id=energy" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-energy-01.jpg" alt="能源管理系统" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">源网荷储一体化能源管理工业互联网平台</h3>
+            <p class="work-card__meta">多端应用</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=equipment" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-equipment-01.jpg" alt="特殊装备运维平台" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">特殊装备数字化运维管理平台</h3>
+            <p class="work-card__meta">多端应用</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=charge" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-charge-01.jpg" alt="充电运营管理系统" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">充电运营管理系统</h3>
+            <p class="work-card__meta">多端应用</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=hcharge" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-Hcharge-01.jpg" alt="火星充电小程序" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">火星充电小程序</h3>
+            <p class="work-card__meta">移动端</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=city" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-city-01.jpg" alt="城市合作重点项目" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">信阳市小米集团城市合作重点项目管理平台</h3>
+            <p class="work-card__meta">多端应用</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=railway" class="work-card fade-up" data-category="ui">
+          <div class="work-card__cover">
+            <img src="assets/images/UI-railway-01.jpg" alt="车站智能AI服务台" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">UI 设计</span>
+            <h3 class="work-card__title">车站智能AI服务台</h3>
+            <p class="work-card__meta">软硬件结合</p>
+          </div>
+        </a>
+
+        <!-- 画册 -->
+        <a href="work-detail.html?id=yiyuantai" class="work-card fade-up" data-category="ProductCatalog">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_6.png" alt="易元泰宣传画册" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">宣传物料</span>
+            <h3 class="work-card__title">易元泰宣传画册</h3>
+            <p class="work-card__meta">画册</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=huoxing" class="work-card fade-up" data-category="ProductCatalog">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_4.png" alt="火星星云宣传画册" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">宣传物料</span>
+            <h3 class="work-card__title">火星星云宣传画册</h3>
+            <p class="work-card__meta">画册</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=yimushangyuan" class="work-card fade-up" data-category="ProductCatalog">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_3.png" alt="一目尚源宣传画册" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">宣传物料</span>
+            <h3 class="work-card__title">一目尚源宣传画册</h3>
+            <p class="work-card__meta">画册</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=poster" class="work-card fade-up" data-category="ProductCatalog">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_7.png" alt="节日宣传海报" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">宣传物料</span>
+            <h3 class="work-card__title">节日宣传海报</h3>
+            <p class="work-card__meta">海报</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=OtherMaterials" class="work-card fade-up" data-category="ProductCatalog">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_8.png" alt="其他物料" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">宣传物料</span>
+            <h3 class="work-card__title">其他宣传物料</h3>
+            <p class="work-card__meta">宣传物料</p>
+          </div>
+        </a>
+
+        <!-- 插画 -->
+        <a href="work-detail.html?id=handDrawn" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/ART-handDrawn-01.png" alt="个人手绘" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">手绘</span>
+            <h3 class="work-card__title">个人手绘作品</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=mouseDraw" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/ART-mouseDraw-01.jpg" alt="个人鼠绘" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">鼠绘</span>
+            <h3 class="work-card__title">个人鼠绘作品</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=DigitalPaint" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/ART-DigitalPaint-01.png" alt="个人板绘" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">板绘</span>
+            <h3 class="work-card__title">个人板绘作品</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=FestIllus" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/ART-FestIllus-01.png" alt="个人节日主题插画" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">插画</span>
+            <h3 class="work-card__title">个人节日主题插画</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+
+        <a href="work-detail.html?id=gold" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_9.png" alt="黄金比例" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">插画</span>
+            <h3 class="work-card__title">黄金比例动物形象+场景配色</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=WeChatEmoji" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/doubao_image_10.png" alt="微信表情" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">微信表情</span>
+            <h3 class="work-card__title">小包子日常微信表情</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=Sogou" class="work-card fade-up" data-category="illustration">
+          <div class="work-card__cover">
+            <img src="assets/images/sogou.jpg" alt="输入法皮肤" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">输入法皮肤</span>
+            <h3 class="work-card__title">搜狗输入法皮肤</h3>
+            <p class="work-card__meta">个人创作</p>
+          </div>
+        </a>
+
+        <!-- 3D 模型 -->
+        <a href="work-detail.html?id=cloudShop" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-equ-09.png" alt="云营业厅" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">云营业厅</h3>
+            <p class="work-card__meta">模型+漫游动画</p>
+          </div>
+        </a>
+        
+        <a href="work-detail.html?id=serviceDesk" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-railway-09.jpeg" alt="车站智能服务台" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">车站智能服务台</h3>
+            <p class="work-card__meta">模型</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=Factory" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-Factory-05.png" alt="柔性共享5G智慧智造工厂" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">柔性共享5G智慧智造工厂</h3>
+            <p class="work-card__meta">模型</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=Mars" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-Mars-01.png" alt="火星充电站" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">火星充电站</h3>
+            <p class="work-card__meta">模型</p>
+          </div>
+        </a>
+
+        <a href="work-detail.html?id=YYT" class="work-card fade-up" data-category="3d">
+          <div class="work-card__cover">
+            <img src="assets/images/3D-YYT-01.png" alt="易元泰模型" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">3D 模型</span>
+            <h3 class="work-card__title">易元泰模型</h3>
+            <p class="work-card__meta">模型</p>
+          </div>
+        </a>
+
+
+        <!-- AI 应用 -->
+        <a href="work-detail.html?id=comic" class="work-card fade-up" data-category="ai">
+          <div class="work-card__cover">
+            <img src="assets/images/AI-comic-01.png" alt="童言画语漫画" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">AI 应用</span>
+            <h3 class="work-card__title">童言画语漫画</h3>
+            <p class="work-card__meta">AI 辅助</p>
+          </div>
+        </a>
+        
+        <a href="work-detail.html?id=book" class="work-card fade-up" data-category="ai">
+          <div class="work-card__cover">
+            <img src="assets/images/AI-book-01.png" alt="读书笔记知识图谱" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">AI 应用</span>
+            <h3 class="work-card__title">读书笔记知识图谱</h3>
+            <p class="work-card__meta">AI 辅助</p>
+          </div>
+        </a>
+        
+        <a href="work-detail.html?id=FestTerm" class="work-card fade-up" data-category="ai">
+          <div class="work-card__cover">
+            <img src="assets/images/AI-FestTerm-01.png" alt="节日节气相关作品" loading="lazy">
+          </div>
+          <div class="work-card__body">
+            <span class="work-card__tag">AI 应用</span>
+            <h3 class="work-card__title">节日节气相关作品</h3>
+            <p class="work-card__meta">AI 辅助</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      
+      
+      <p class="footer__copy">© 2026 范喜凤 · All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox__close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" onclick="lbNav(-1)">‹</button>
+    <img class="lightbox__img" id="lightbox-img" src="" alt="预览">
+    <button class="lightbox__nav lightbox__nav--next" onclick="lbNav(1)">›</button>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+    // 筛选功能
+    const filterBtns = document.querySelectorAll('[data-filter]');
+    const workCards = document.querySelectorAll('[data-category]');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('tag--active'));
+        btn.classList.add('tag--active');
+        const f = btn.dataset.filter;
+        workCards.forEach(card => {
+          if (f === 'all' || card.dataset.category === f) {
+            card.style.display = '';
+            card.classList.add('fade-up');
+            setTimeout(() => card.classList.add('visible'), 50);
+          } else {
+            card.style.display = 'none';
+            card.classList.remove('visible');
+          }
+        });
+      });
+    });
+
+    // Lightbox
+    const lb = document.getElementById('lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    let lbImgs = [], lbIdx = 0;
+    function openLB(imgs, idx) { lbImgs = imgs; lbIdx = idx; lbImg.src = imgs[idx].src; lb.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeLB() { lb.classList.remove('open'); document.body.style.overflow = ''; }
+    function lbNav(d) { lbIdx = (lbIdx + d + lbImgs.length) % lbImgs.length; lbImg.src = lbImgs[lbIdx].src; }
+    document.querySelectorAll('[data-lightbox]').forEach((img, i) => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => { const all = [...document.querySelectorAll('[data-lightbox]')]; openLB(all, all.indexOf(img)); });
+    });
+    lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+    document.addEventListener('keydown', e => {
+      if (!lb.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLB();
+      if (e.key === 'ArrowLeft') lbNav(-1);
+      if (e.key === 'ArrowRight') lbNav(1);
+    });
+    // 页面加载时，初始化默认筛选（只展示 active 按钮对应的作品）
+    (function initFilter() {
+      const activeBtn = document.querySelector('[data-filter].tag--active');
+      if (!activeBtn) return;
+      const f = activeBtn.dataset.filter;
+      workCards.forEach(card => {
+        if (f === 'all' || card.dataset.category === f) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+          card.classList.remove('visible');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

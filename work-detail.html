@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作品详情 — 范喜凤</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500&family=DM+Serif+Display&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <style>
+    /* ========== 画册翻页浏览器 ========== */
+    .flipbook-viewer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+    .flipbook-viewer__header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .flipbook-viewer__title {
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      font-weight: 300;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+    .flipbook-viewer__meta {
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* 主展示区 */
+    .flipbook-stage {
+      position: relative;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .flipbook-stage__img {
+      max-width: 92%;
+      max-height: 92%;
+      object-fit: contain;
+      border-radius: 4px;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .flipbook-stage__img.entering {
+      opacity: 0;
+      transform: scale(0.97);
+    }
+    .flipbook-stage__img.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* 翻页方向提示 */
+    .flipbook-stage__hint-left,
+    .flipbook-stage__hint-right {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 18%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.2);
+      font-size: 2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 2;
+      user-select: none;
+    }
+    .flipbook-stage__hint-left { left: 0; justify-content: flex-start; padding-left: 16px; }
+    .flipbook-stage__hint-right { right: 0; justify-content: flex-end; padding-right: 16px; }
+    .flipbook-stage__hint-left:hover,
+    .flipbook-stage__hint-right:hover {
+      color: rgba(255,255,255,0.7);
+      background: linear-gradient(90deg, rgba(255,255,255,0.04), transparent);
+    }
+    .flipbook-stage__hint-right:hover {
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04));
+    }
+
+    /* 控制栏 */
+    .flipbook-controls {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    .flipbook-controls__btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 1.125rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .flipbook-controls__btn:hover:not(:disabled) {
+      border-color: rgba(255,255,255,0.5);
+      color: #FFFFFF;
+      background: rgba(255,255,255,0.06);
+    }
+    .flipbook-controls__btn:disabled {
+      opacity: 0.2;
+      cursor: default;
+    }
+    .flipbook-controls__page {
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      letter-spacing: 0.05em;
+      min-width: 60px;
+      text-align: center;
+    }
+    .flipbook-controls__page strong {
+      color: #FFFFFF;
+      font-weight: 400;
+    }
+
+    /* 页码圆点指示器 */
+    .flipbook-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .flipbook-dots__dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      padding: 0;
+    }
+    .flipbook-dots__dot:hover {
+      background: rgba(255,255,255,0.35);
+    }
+    .flipbook-dots__dot.active {
+      background: #FFFFFF;
+      transform: scale(1.2);
+    }
+
+    /* 缩略图横滚条 */
+    .flipbook-thumbs {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+    .flipbook-thumbs__item {
+      flex-shrink: 0;
+      width: 72px;
+      height: 54px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.2s;
+    }
+    .flipbook-thumbs__item:hover { opacity: 0.8; }
+    .flipbook-thumbs__item.active {
+      border-color: #FFFFFF;
+      opacity: 1;
+    }
+    .flipbook-thumbs__item img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+
+    /* 键盘提示 */
+    .flipbook-keyboard-hint {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.25);
+      font-weight: 300;
+    }
+
+    /* 作品概述区（画册也显示） */
+    .work-detail__overview {
+      max-width: 720px;
+      margin: 0 auto 60px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .work-detail__overview h1 {
+      font-size: clamp(1.5rem, 3vw, 2.75rem);
+      font-weight: 500;
+      line-height: 1.25;
+      letter-spacing: 0.01em;
+      margin-bottom: 16px;
+      color: #FFFFFF;
+    }
+    .work-detail__overview .subtitle {
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      line-height: 2;
+      margin-bottom: 28px;
+    }
+    .work-detail__meta {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .meta-item h4 {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+    .meta-item p {
+      color: rgba(255,255,255,0.8);
+      font-weight: 300;
+      font-size: 0.9375rem;
+    }
+    .tool-icons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tool-icon {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      font-size: 0.8125rem;
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+    }
+
+    /* 普通作品章节样式（复用现有） */
+    .work-section {
+      margin-bottom: 20px;
+    }
+    .work-section__title {
+      font-size: clamp(1.125rem, 2vw, 1.5rem);
+      font-weight: 300;
+      color: #FFFFFF;
+      margin-bottom: 20px;
+      letter-spacing: 0.01em;
+    }
+    .work-section__body {
+      color: rgba(255,255,255,0.6);
+      font-weight: 300;
+      line-height: 2;
+    }
+    .work-section__body p { margin: 20px; }
+    .pull-quote {
+      background: rgba(255,255,255,0.03);
+      border-left: 2px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.7);
+      padding: 20px 24px;
+      border-radius: 0 8px 8px 0;
+      margin: 24px 0;
+      font-size: 0.9375rem;
+      line-height: 1.8;
+    }
+    .image-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 28px;
+    }
+    .image-grid img {
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .emoji-grid img {
+      border-radius: 6px;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      cursor: pointer;
+      transition: transform 0.2s;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .emoji-grid img:hover {
+      transform: scale(1.08);
+      border-color: rgba(255,255,255,0.15);
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 28px;
+    }
+    .preview-grid img {
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .preview-grid img:hover {
+      transform: scale(1.03);
+    }
+    .goal-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .goal-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .goal-icon {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      color: #06060A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    /* 上一篇/下一篇导航 */
+    .work-nav {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      gap: 20px;
+    }
+    .work-nav__item {
+      flex: 1;
+      padding: 20px 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.25s;
+      max-width: 45%;
+    }
+    .work-nav__item:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.03);
+    }
+    .work-nav__item--next { text-align: right; margin-left: auto; }
+    .work-nav__label {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 6px;
+      letter-spacing: 0.05em;
+    }
+    .work-nav__title {
+      font-size: 0.9375rem;
+      color: rgba(255,255,255,0.8);
+      font-weight: 300;
+    }
+
+    @media (max-width: 640px) {
+      .flipbook-stage { aspect-ratio: 3 / 2.2; }
+      .flipbook-stage__hint-left,
+      .flipbook-stage__hint-right { display: none; }
+      .image-grid { grid-template-columns: 1fr; }
+      .work-nav { flex-direction: column; }
+      .work-nav__item { max-width: 100%; }
+    }
+    .img-with-model {
+      position: relative;
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .img-with-model img {
+      width: 100%;
+      display: block;
+    }
+    .img-with-model .model-btn {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 7px 18px;
+      background: rgba(0,0,0,0.65);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 18px;
+      font-size: 0.8125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(6px);
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .img-with-model .model-btn:hover {
+      background: rgba(255,255,255,0.18);
+      border-color: rgba(255,255,255,0.5);
+    }
+    #modelViewerModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(12px);
+    }
+    #modelViewerModal .model-close-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #modelViewerModal .model-close-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    #modelViewerModal .model-hint {
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.75rem;
+      padding: 10px;
+      letter-spacing: 0.05em;
+    }
+    model-viewer {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+    }
+  </style>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+  <!-- 动态渐变背景第三层 -->
+  <div class="bg-glow-layer"></div>
+
+  <!-- 导航栏 -->
+  <nav class="navbar scrolled" style="background:rgba(13,13,13,0.94);backdrop-filter:blur(16px);box-shadow:0 1px 0 rgba(255,255,255,0.06);">
+    <a href="index.html" class="navbar__logo"><span>DESIGN PORTFOLIO</span></a>
+    <ul class="navbar__links" style="display:flex;gap:40px;list-style:none;">
+      <li><a href="works.html" style="color:#FFFFFF;font-weight:400;">作品</a></li>
+      <li><a href="about.html">关于</a></li>
+    </ul>
+  </nav>
+
+  <!-- 作品详情动态内容 -->
+  <article class="work-detail" style="padding-top:120px;">
+    <div class="container" id="work-content">
+      <!-- JS 动态填充 -->
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+    
+      <p class="footer__copy">© 2026 范喜凤 · All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox__close" onclick="closeLightbox()">✕</button>
+    <button class="lightbox__nav lightbox__nav--prev" onclick="lbNav(-1)">‹</button>
+    <img class="lightbox__img" id="lightbox-img" src="" alt="预览">
+    <button class="lightbox__nav lightbox__nav--next" onclick="lbNav(1)">›</button>
+  </div>
+
+  <script>
+    // ============================================================
+    //  作品数据
+    // ============================================================
+    const worksData = {
+      // ---------- UI 设计 ----------
+      'energy': {
+        title: '源网荷储一体化能源管理工业互联网平台',
+        subtitle: '面向能源行业的综合管理平台，实现源、网、荷、储全链路数据可视化与调度优化。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2024.09 - 2025.02 · 6个月' },
+          { label: '工具', value: ['Figma', 'pixso', 'PS', '3D Max', 'SW'] },
+        ],
+        cover: 'assets/images/UI-energy-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-energy-02.jpg'},
+          {image: 'assets/images/UI-energy-03.png'},
+          {image: 'assets/images/UI-energy-04.png'},
+          {image: 'assets/images/UI-energy-05.png'},
+          {image: 'assets/images/UI-energy-05-1.png'},
+          {image: 'assets/images/UI-energy-06.png'},
+          {image: 'assets/images/UI-energy-07.png'},
+          {image: 'assets/images/UI-energy-08.png'},
+          {image: 'assets/images/UI-energy-09.png'},
+          {image: 'assets/images/UI-energy-10.png'},
+          {image: 'assets/images/UI-energy-11.png'},
+          {image: 'assets/images/UI-energy-12.png'},
+          {image: 'assets/images/UI-energy-13.png'},
+        ]
+      },
+      'equipment': {
+        title: '特殊装备数字化运维管理平台',
+        subtitle: '面向特殊装备的全生命周期运维管理系统，实现设备状态实时监控、故障预警与工单闭环管理。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2025.03 - 2025.04  · 1个月' },
+          { label: '工具', value: ['pixso', 'PS', '3D Max', 'SW'] },
+        ],
+        cover: 'assets/images/UI-equipment-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-equipment-02.jpg'},
+          {image: 'assets/images/UI-equipment-03.jpg'},
+          {video: 'assets/images/UI-equipment-video.mp4', caption: '数字孪生模型演示视频'},
+          {image: 'assets/images/UI-equipment-04.jpg'},
+          {image: 'assets/images/UI-equipment-05.jpg'},
+        ]
+      },
+      'charge': {
+        title: '充电运营管理系统',
+        subtitle: '新能源汽车充电站运营管理平台，涵盖站点监控、订单管理、财务结算、用户运营等核心功能。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2025.05 - 2025.09  · 3个月' },
+          { label: '工具', value: ['pixso', 'PS', '3D Max'] },
+        ],
+        cover: 'assets/images/UI-charge-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-charge-02.jpg'},
+          {image: 'assets/images/UI-charge-03.jpg'},
+          {image: 'assets/images/UI-charge-04.jpg'},
+          {image: 'assets/images/UI-charge-05.png'},
+          {image: 'assets/images/UI-charge-06.png'},
+          {image: 'assets/images/UI-charge-07.png'},
+          {image: 'assets/images/UI-charge-08.png'},
+          {image: 'assets/images/UI-charge-09.png'},
+          {image: 'assets/images/UI-charge-10.png'},
+          {image: 'assets/images/UI-charge-11.png'},
+        ]
+      },
+
+      'hcharge': {
+        title: '火星充电小程序',
+        subtitle: '火星充电小程序提供安全便捷充电服务，赋能电车产业与清洁能源可持续发展。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2023.01 - 2024.08  · 7个月' },
+          { label: '工具', value: ['pixso', 'PS', '3D Max'] },
+        ],
+        cover: 'assets/images/UI-Hcharge-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-Hcharge-02.jpg'},
+          {image: 'assets/images/UI-Hcharge-03.jpg'},
+          {image: 'assets/images/UI-Hcharge-04.jpg'},
+        ]
+      },
+      'city': {
+        title: '信阳市小米集团城市合作重点项目管理平台',
+        subtitle: '信阳小米项目管理平台供领导查看项目进度、合作数据与区县项目排行。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2022.08 - 2023.08  · 12个月' },
+          { label: '工具', value: ['figma', 'PS'] },
+        ],
+        cover: 'assets/images/UI-city-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-city-02.jpg'},
+          {image: 'assets/images/UI-city-03.jpg'},
+          {image: 'assets/images/UI-city-04.jpg'},
+        ]
+      },
+      'railway': {
+        title: '车站智能AI服务台',
+        subtitle: '通过该系统为旅客提供咨询、服务，包括：业务咨询、车站导航、余票查询、交通线路、求助投诉、车站周边等。',
+        category: 'UI 设计',
+        categorySlug: 'ui',
+        type: 'regular',
+        meta: [
+          { label: '角色', value: '主导设计师（UI/UX）' },
+          { label: '周期', value: '2020.05 - 2022.03  · 18个月' },
+          { label: '工具', value: ['figma', 'PS', '3D Max', 'UE4'] },
+        ],
+        cover: 'assets/images/UI-railway-01.jpg',
+        sections: [
+          {image: 'assets/images/UI-railway-02.jpg'},
+          {image: 'assets/images/UI-railway-03.jpg'},
+          {video: 'assets/images/UI-railway-video.mp4', caption: '平台操作演示视频'},
+          {image: 'assets/images/UI-railway-04.jpg'},
+        ]
+      },
+      // ---------- 画册 / 宣传物料 ----------
+      'yiyuantai': {
+        title: '易元泰宣传画册',
+        subtitle: '为企业品牌宣传打造的精美画册，融合品牌理念与视觉表达，传递专业可靠的品牌形象。',
+        category: '宣传物料',
+        categorySlug: 'ProductCatalog',
+        type: 'catalog',
+        meta: [
+          { label: '角色', value: '视觉设计' },
+          { label: '周期', value: '2025 · 画册设计' },
+          { label: '工具', value: ['Photoshop',  'Illustrator'] },
+        ],
+        cover: 'assets/images/doubao_image_6.png',
+        pages: [
+          'assets/images/pptx-image194.png',
+          'assets/images/pptx-image195.png',
+          'assets/images/pptx-image196.png',
+          'assets/images/pptx-image197.png',
+          'assets/images/pptx-image198.png',
+          'assets/images/pptx-image199.png',
+          // 后续添加更多画册页面图片，例如：
+          // 'assets/images/catalog/yiyuantai_02.jpg',
+          // 'assets/images/catalog/yiyuantai_03.jpg',
+        ]
+      },
+      'huoxing': {
+        title: '火星星云宣传画册',
+        subtitle: '科技品牌宣传画册设计，以星云为创意概念，展现品牌探索与创新的精神内核。',
+        category: '宣传物料',
+        categorySlug: 'ProductCatalog',
+        type: 'catalog',
+        meta: [
+          { label: '角色', value: '视觉设计' },
+          { label: '周期', value: '2023 · 画册设计' },
+          { label: '工具', value: ['Photoshop', 'Illustrator'] },
+        ],
+        cover: 'assets/images/doubao_image_4.png',
+        pages: [
+          'assets/images/pptx-image181.png',
+          'assets/images/pptx-image182.png',
+          'assets/images/pptx-image183.png',
+          'assets/images/pptx-image184.png',
+          'assets/images/pptx-image185.png',
+          'assets/images/pptx-image186.png',
+          // 'assets/images/catalog/huoxing_02.jpg',
+          // 'assets/images/catalog/huoxing_03.jpg',
+        ]
+      },
+      'yimushangyuan': {
+        title: '一目尚源宣传画册',
+        subtitle: '品牌宣传画册设计，以"一目尚源"为核心概念，传递品牌对品质与美学的追求。',
+        category: '宣传物料',
+        categorySlug: 'ProductCatalog',
+        type: 'catalog',
+        meta: [
+          { label: '角色', value: '视觉设计' },
+          { label: '周期', value: '2024 · 画册设计' },
+          { label: '工具', value: ['Photoshop', 'Illustrator'] },
+        ],
+        cover: 'assets/images/doubao_image_3.png',
+        pages: [
+          'assets/images/pptx-image188.png',
+          'assets/images/pptx-image189.png',
+          'assets/images/pptx-image190.png',
+          'assets/images/pptx-image191.png',
+          'assets/images/pptx-image192.png',
+          // 'assets/images/catalog/yimushangyuan_02.jpg',
+          // 'assets/images/catalog/yimushangyuan_03.jpg',
+        ]
+      },
+      
+      'poster': {
+        title: '节日宣传海报',
+        subtitle: '公司产品宣传海报设计，以"节日"为核心概念，传递品牌对品质与美学的追求。',
+        category: '宣传物料',
+        categorySlug: 'ProductCatalog',
+        type: 'catalog',
+        meta: [
+          { label: '角色', value: '视觉设计' },
+          { label: '周期', value: '2024-2026 · 海报设计' },
+          { label: '工具', value: ['Photoshop', 'Illustrator'] },
+        ],
+        cover: 'assets/images/doubao_image_7.png',
+        pages: [
+          'assets/images/M-poster.png',
+          // 'assets/images/catalog/yimushangyuan_02.jpg',
+          // 'assets/images/catalog/yimushangyuan_03.jpg',
+        ]
+      },
+      'OtherMaterials': {
+        title: '其他宣传物料',
+        subtitle: '覆盖品牌宣传、活动推广、客户转化等多元场景，统一视觉识别，提升企业形象与传播效率。',
+        category: '宣传物料',
+        categorySlug: 'ProductCatalog',
+        type: 'catalog',
+        meta: [
+          { label: '角色', value: '视觉设计' },
+          { label: '周期', value: '2020-2024 · 其他物料设计' },
+          { label: '工具', value: ['Photoshop', 'Illustrator'] },
+        ],
+        cover: 'assets/images/doubao_image_8.png',
+        pages: [
+          'assets/images/M-poster-02.png',
+          'assets/images/M-poster-03.png',
+          // 'assets/images/catalog/yimushangyuan_02.jpg',
+          // 'assets/images/catalog/yimushangyuan_03.jpg',
+        ]
+      },
+
+      // ---------- 插画 ----------
+      'handDrawn': {
+        title: '个人手绘作品',
+        subtitle: '汇集素描、黑白线稿、彩铅、水彩、水粉多媒介手绘，笔触细腻柔和，风格治愈温暖。以多样画材呈现不同肌理质感，完整展现多元细腻的原创手绘风格。',
+        category: '手绘',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2018-2026' },
+          { label: '工具', value: ['纸张','扇面',  '彩铅', '水彩', '水粉', '勾线笔'] },
+        ],
+        cover:'assets/images/ART-handDrawn-01.png',
+        pages:[
+          'assets/images/ART-handDrawn-02.jpeg',
+          'assets/images/ART-handDrawn-03.jpeg',
+          'assets/images/ART-handDrawn-04.jpeg',
+        ]
+      },
+      'mouseDraw': {
+        title: '个人鼠绘作品',
+        subtitle: '记录个人鼠绘作品，展示个人创作能力。',
+        category: '鼠绘',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2018-2026' },
+          { label: '工具', value: ['鼠标','电脑'] },
+        ],
+        cover:'assets/images/ART-mouseDraw-01.jpg',
+        pages:[
+          'assets/images/ART-mouseDraw-01.webp',
+          'assets/images/ART-mouseDraw-02.webp',
+          'assets/images/ART-mouseDraw-03.webp',
+          'assets/images/ART-mouseDraw-04.webp',
+        ]
+      },
+      'DigitalPaint': {
+        title: '个人板绘作品',
+        subtitle: '记录个人板绘作品，展示个人创作能力。',
+        category: '板绘',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2018-2026' },
+          { label: '工具', value: ['数位板','电脑'] },
+        ],
+        cover:'assets/images/ART-DigitalPaint-01.png',
+        pages:[
+          'assets/images/ART-DigitalPaint-02.png',
+          'assets/images/ART-DigitalPaint-03.png',
+          'assets/images/ART-DigitalPaint-05.jpg',
+          'assets/images/ART-DigitalPaint-04.jpeg',
+        ]
+      },
+      'FestIllus': {
+        title: '个人节日主题插画',
+        subtitle: '记录个人节日主题插画，展示个人创作能力。',
+        category: '插画',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2018-2026' },
+          { label: '工具', value: ['数位板','电脑'] },
+        ],
+        cover:'assets/images/ART-FestIllus-01.png',
+        pages:[
+          'assets/images/ART-FestIllus-02.jpg',
+          'assets/images/ART-FestIllus-03.jpg',
+        ]
+      },
+      'gold': {
+        title: '黄金比例动物形象+场景配色',
+        subtitle: '学习黄金比例的方式来制作动物形象和不同色调的插画练习作品。',
+        category: '插画',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2018' },
+          { label: '工具', value: ['Illustrator', 'Photoshop'] },
+        ],
+        cover:'assets/images/doubao_image_9.png',
+        pages:[
+          'assets/images/ART-gold-01.webp',
+          'assets/images/ART-gold-02.webp',
+          'assets/images/ART-gold-03.webp',
+          'assets/images/ART-gold-04.webp',
+          'assets/images/ART-gold-05.webp',
+          'assets/images/ART-gold-06.webp',
+        ]
+      },
+      'WeChatEmoji': {
+        title: '小包子日常微信表情',
+        subtitle: '每款搭配趣味口语化文字，画风统一可爱，适配好友闲聊、工作对接、节日互动，轻松传递喜怒哀乐，让线上聊天更生动有温度。',
+        category: '微信表情',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        layout: 'emoji-grid',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2019-2020' },
+          { label: '工具', value: ['Photoshop'] },
+        ],
+        cover:'assets/images/doubao_image_10.png',
+        previewImages: [
+          'assets/images/WeChatEmoji/pptx-image271.png',
+          'assets/images/WeChatEmoji/pptx-image270.png',
+        ],
+        pages:[
+          'assets/images/WeChatEmoji/WeChatEmoji-01.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-02.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-03.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-04.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-05.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-06.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-07.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-08.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-09.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-10.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-11.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-12.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-13.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-14.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-15.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-16.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-17.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-18.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-19.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-20.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-21.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-22.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-23.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-24.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-25.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-26.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-27.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-28.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-29.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-30.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-31.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-32.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-33.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-34.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-35.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-36.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-37.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-38.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-39.gif',
+          'assets/images/WeChatEmoji/WeChatEmoji-40.gif',
+        ]
+      },
+      'Sogou': {
+        title: '搜狗输入法皮肤',
+        subtitle: '两款特色输入法皮肤，一款藏转经筒祈福元素，国风氛围感拉满；另一款软萌睡狐狸造型，清新治愈，打字视觉体验丰富有趣。',
+        category: '输入法皮肤',
+        categorySlug: 'illustration',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '个人创作' },
+          { label: '周期', value: '2019' },
+          { label: '工具', value: ['Illustrator', 'Photoshop'] },
+        ],
+        cover:'assets/images/sogou.jpg',
+        pages:[
+          'assets/images/sogou01.jpg',
+          'assets/images/sogou01.gif',
+          'assets/images/sogou02.jpg',
+          'assets/images/sogou02.gif',
+        ]
+      },
+
+      // ---------- 3D ----------
+      'cloudShop': {
+        title: '云营业厅',
+        subtitle: '三维建模还原营业厅整体布局与设备细节，支持多角度展示，用于方案汇报与客户端沉浸式预览。',
+        category: '3D 模型',
+        categorySlug: '3d',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '场景建模' },
+          { label: '周期', value: '2012' },
+          { label: '工具', value: ['3D Max', 'PS'] },
+        ],
+        cover:'assets/images/3D-equ-09.png',
+        sections: [
+          {image: 'assets/images/3D-equ-08.png'},
+          {image: 'assets/images/3D-equ-09.png'},
+          {video: 'assets/images/3D-equ-10.mp4', caption: '云营业厅漫游动画'},
+          {image: 'assets/images/3D-equ-01.jpg'},
+          {image: 'assets/images/3D-equ-02.jpg'},
+          {image: 'assets/images/3D-equ-03.jpg'},
+          {image: 'assets/images/3D-equ-04.jpg'},
+          {image: 'assets/images/3D-equ-05.jpg'},
+          {image: 'assets/images/3D-equ-06.jpg'},
+          {image: 'assets/images/3D-equ-07.jpg'},
+        ] 
+      },
+      'serviceDesk': {
+        title: '车站智能服务台',
+        subtitle: '三维建模还原车站整体架构和智能服务台完美融合到一起，用于产品展示与交互演示。',
+        category: '3D 模型',
+        categorySlug: '3d',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '产品建模' },
+          { label: '周期', value: '2013' },
+          { label: '工具', value: ['3D Max', 'PS'] },
+        ],
+        cover:'assets/images/3D-railway-09.jpeg',
+        pages:[
+          'assets/images/3D-railway-01.jpeg',
+          'assets/images/3D-railway-02.png',
+          'assets/images/3D-railway-03.png',
+          'assets/images/3D-railway-04.png',
+          'assets/images/3D-railway-05.png',
+          'assets/images/3D-railway-06.png',
+          'assets/images/3D-railway-07.png',
+          'assets/images/3D-railway-08.png',
+          'assets/images/3D-railway-09.jpeg',
+          'assets/images/3D-railway-10.jpeg',
+          'assets/images/3D-railway-11.jpeg',
+          'assets/images/3D-railway-12.jpeg',
+        ]
+      },
+      'Factory': {
+        title: '柔性共享5G智慧智造工厂',
+        subtitle: '三维建模还原智慧工厂产线布局与设备形态，用于方案汇报与展示。',
+        category: '3D 模型',
+        categorySlug: '3d',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '工业场景建模' },
+          { label: '周期', value: '2024' },
+          { label: '工具', value: ['3D Max', 'PS'] },
+        ],
+        cover:'assets/images/3D-Factory-05.png',
+        pages:[
+          'assets/images/3D-Factory-01.jpeg',
+          'assets/images/3D-Factory-02.png',
+          'assets/images/3D-Factory-03.png',
+          'assets/images/3D-Factory-04.png',
+          'assets/images/3D-Factory-05.png',
+          'assets/images/3D-Factory-06.png',
+          'assets/images/3D-Factory-07.png',
+          'assets/images/3D-Factory-08.png',
+          'assets/images/3D-Factory-09.png',
+          'assets/images/3D-Factory-10.jpeg',
+        ]
+      },
+      'Mars': {
+        title: '火星充电站',
+        subtitle: '科幻风格充电站三维场景创作，探索未来能源补给站的空间形态。',
+        category: '3D 模型',
+        categorySlug: '3d',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '场景创作' },
+          { label: '周期', value: '2023' },
+          { label: '工具', value: ['3D Max', 'PS'] },
+        ],
+        cover:'assets/images/3D-Mars-01.png',
+        modelMap: {
+          'assets/images/3D-Mars-01.png': 'assets/images/3D-Mars-01.glb'
+        },
+        pages:[
+          'assets/images/3D-Mars-01.png',
+          'assets/images/3D-Mars-02.jpeg',
+          'assets/images/3D-Mars-03.png',
+        ]
+      },
+      'YYT': {
+        title: '易元泰模型',
+        subtitle: '产品三维建模与渲染，用于展示设计细节与材质效果。',
+        category: '3D 模型',
+        categorySlug: '3d',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: '产品建模' },
+          { label: '周期', value: '2024-2026' },
+          { label: '工具', value: ['3D Max', 'PS'] },
+        ],
+        cover:'assets/images/3D-YYT-01.png',
+        pages:[
+          'assets/images/3D-YYT-02.jpg',
+          'assets/images/3D-YYT-03.jpg',
+          'assets/images/3D-YYT-04.jpg',
+        ]
+      },
+
+      // ---------- AI ----------
+      'comic': {
+        title: '童言画语漫画',
+        subtitle: '利用 AI 工具进行漫画创作，探索不同的艺术风格。',
+        category: 'AI 应用',
+        categorySlug: 'ai',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: 'AI 辅助' },
+          { label: '周期', value: '2025' },
+          { label: '工具', value: ['AI', 'Photoshop'] },
+        ],
+        cover: 'assets/images/AI-comic-01.png',
+        images: [
+          'assets/images/AI-comic-02.jpg',
+          'assets/images/AI-comic-03.jpg',
+          'assets/images/AI-comic-04.jpg',
+          'assets/images/AI-comic-05.jpg',
+          'assets/images/AI-comic-06.jpg',
+          'assets/images/AI-comic-07.jpg',
+          'assets/images/AI-comic-08.jpg',
+          'assets/images/AI-comic-09.jpg',
+        ]
+      },
+      
+      'book': {
+        title: '读书笔记知识图谱',
+        subtitle: '利用 AI 工具进行读书笔记知识图谱生成，探索不同的知识模式。',
+        category: 'AI 应用',
+        categorySlug: 'ai',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: 'AI 辅助' },
+          { label: '周期', value: '2026' },
+          { label: '工具', value: ['AI', 'Photoshop'] },
+        ],
+        cover: 'assets/images/AI-book-01.png',
+        images: [
+          'assets/images/AI-book-02.jpg',
+          'assets/images/AI-book-03.jpg',
+        ]
+      },
+      
+      'FestTerm': {
+        title: '节日节气相关作品',
+        subtitle: '利用 AI 工具进行节日节气相关作品生成，探索不同的知识模式。',
+        category: 'AI 应用',
+        categorySlug: 'ai',
+        type: 'gallery',
+        meta: [
+          { label: '类型', value: 'AI 辅助' },
+          { label: '周期', value: '2026' },
+          { label: '工具', value: ['AI', 'Photoshop'] },
+        ],
+        cover: 'assets/images/AI-FestTerm-01.png',
+        images: [
+          'assets/images/AI-FestTerm-02.jpg',
+        ]
+      },
+    };
+
+    // 上一篇/下一篇顺序
+    const workOrder = [
+      // UI 设计
+      'energy', 'equipment', 'charge', 'hcharge', 'city', 'railway',
+      // 宣传物料
+      'yiyuantai', 'huoxing', 'yimushangyuan', 'poster', 'OtherMaterials',
+      // 插画
+      'handDrawn', 'mouseDraw', 'DigitalPaint', 'FestIllus', 'gold', 'WeChatEmoji', 'Sogou',
+      // 3D 模型
+      'cloudShop', 'serviceDesk', 'Factory', 'Mars', 'YYT',
+      // AI 应用
+      'comic', 'book', 'FestTerm'
+    ];
+
+    // ============================================================
+    //  渲染：画册翻页
+    // ============================================================
+    function renderCatalog(work) {
+      const idx = workOrder.indexOf(work.id);
+      const prevId = idx > 0 ? workOrder[idx - 1] : null;
+      const nextId = idx < workOrder.length - 1 ? workOrder[idx + 1] : null;
+      const prevWork = prevId ? worksData[prevId] : null;
+      const nextWork = nextId ? worksData[nextId] : null;
+
+      const pages = work.pages.length > 0 ? work.pages : [work.cover];
+
+      let html = `
+        <!-- 面包屑 -->
+        <div style="margin-bottom:32px;">
+          <a href="index.html" style="color:rgba(255,255,255,0.5);text-decoration:none;">首页</a>
+          <span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span>
+          <a href="works.html" style="color:rgba(255,255,255,0.5);text-decoration:none;">作品</a>
+          <span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span>
+          <span style="color:#FFFFFF;">${work.title}</span>
+        </div>
+
+        <!-- 画册翻页浏览器 -->
+        <div class="flipbook-viewer">
+
+          <div class="flipbook-viewer__header">
+            <div style="margin-bottom:16px;">
+              <span style="display:inline-block;padding:4px 14px;border:1px solid rgba(255,255,255,0.15);border-radius:2px;font-size:0.8125rem;color:rgba(255,255,255,0.6);letter-spacing:0.05em;">${work.category}</span>
+            </div>
+            
+          </div>
+
+          <!-- 概述 -->
+          <div class="work-detail__overview">
+            <div>
+              <h1 style="font-size:clamp(1.5rem,3vw,2.75rem);font-weight:300;line-height:1.25;letter-spacing:0.01em;margin-bottom:16px;color:#FFFFFF;">${work.title}</h1>
+              <p class="subtitle">${work.subtitle}</p>
+            </div>
+            <div class="work-detail__meta">
+              ${work.meta.map(m => `
+                <div class="meta-item">
+                  <h4>${m.label}</h4>
+                  <p>${Array.isArray(m.value) ? m.value.map(t => `<span class="tool-icon">${t}</span>`).join('') : m.value}</p>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- 翻页主区域 -->
+          <div class="flipbook-stage" id="flip-stage">
+            <div class="flipbook-stage__hint-left" onclick="flipTo(flipCurrent - 1)">‹</div>
+            <img class="flipbook-stage__img visible" id="flip-img" src="${pages[0]}" alt="第1页" />
+            <div class="flipbook-stage__hint-right" onclick="flipTo(flipCurrent + 1)">›</div>
+          </div>
+
+          <!-- 控制栏 -->
+          <div class="flipbook-controls">
+            <button class="flipbook-controls__btn" id="flip-prev" onclick="flipTo(flipCurrent - 1)" disabled>‹</button>
+            <div class="flipbook-controls__page"><strong id="flip-cur">1</strong> / ${pages.length}</div>
+            <button class="flipbook-controls__btn" id="flip-next" onclick="flipTo(flipCurrent + 1)">›</button>
+          </div>
+
+          <!-- 圆点指示器 -->
+          <div class="flipbook-dots" id="flip-dots">
+            ${pages.map((_, i) => `
+              <button class="flipbook-dots__dot${i === 0 ? ' active' : ''}" onclick="flipTo(${i})" aria-label="第${i+1}页"></button>
+            `).join('')}
+          </div>
+
+          <!-- 缩略图条 -->
+          <div class="flipbook-thumbs" id="flip-thumbs">
+            ${pages.map((src, i) => `
+              <div class="flipbook-thumbs__item${i === 0 ? ' active' : ''}" onclick="flipTo(${i})">
+                <img src="${src}" alt="第${i+1}页" loading="lazy">
+              </div>
+            `).join('')}
+          </div>
+
+          <div class="flipbook-keyboard-hint">← → 键翻页 · 点击左右区域快速翻页</div>
+        </div>
+
+        <!-- 上一篇/下一篇 -->
+        <div class="work-nav">
+          ${prevWork ? `
+            <a href="work-detail.html?id=${prevId}" class="work-nav__item">
+              <div class="work-nav__label">← 上一篇</div>
+              <div class="work-nav__title">${prevWork.title}</div>
+            </a>
+          ` : '<div></div>'}
+          ${nextWork ? `
+            <a href="work-detail.html?id=${nextId}" class="work-nav__item work-nav__item--next">
+              <div class="work-nav__label">下一篇 →</div>
+              <div class="work-nav__title">${nextWork.title}</div>
+            </a>
+          ` : '<div></div>'}
+        </div>
+      `;
+
+      document.getElementById('work-content').innerHTML = html;
+
+      // 初始化翻页状态
+      window.flipPages = pages;
+      window.flipCurrent = 0;
+      window.flipImg = document.getElementById('flip-img');
+
+      // 键盘导航
+      document.addEventListener('keydown', handleFlipKey);
+      // 触摸滑动
+      initFlipTouch();
+    }
+
+    // 翻页函数
+    function flipTo(idx) {
+      if (idx < 0 || idx >= window.flipPages.length) return;
+      const img = window.flipImg;
+      if (!img) return;
+
+      img.classList.remove('visible');
+      img.classList.add('entering');
+
+      setTimeout(() => {
+        img.src = window.flipPages[idx];
+        window.flipCurrent = idx;
+        img.classList.remove('entering');
+        img.classList.add('visible');
+        updateFlipUI();
+      }, 180);
+    }
+
+    function updateFlipUI() {
+      const cur = window.flipCurrent;
+      const total = window.flipPages.length;
+      const curEl = document.getElementById('flip-cur');
+      const prevBtn = document.getElementById('flip-prev');
+      const nextBtn = document.getElementById('flip-next');
+      if (curEl) curEl.textContent = cur + 1;
+      if (prevBtn) prevBtn.disabled = cur === 0;
+      if (nextBtn) nextBtn.disabled = cur === total - 1;
+
+      // 更新圆点
+      document.querySelectorAll('.flipbook-dots__dot').forEach((d, i) => {
+        d.classList.toggle('active', i === cur);
+      });
+      // 更新缩略图
+      document.querySelectorAll('.flipbook-thumbs__item').forEach((t, i) => {
+        t.classList.toggle('active', i === cur);
+      });
+    }
+
+    function handleFlipKey(e) {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); flipTo(window.flipCurrent - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); flipTo(window.flipCurrent + 1); }
+    }
+
+    function initFlipTouch() {
+      const stage = document.getElementById('flip-stage');
+      if (!stage) return;
+      let startX = 0;
+      stage.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+      stage.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - startX;
+        if (Math.abs(dx) > 50) {
+          if (dx < 0) flipTo(window.flipCurrent + 1);
+          else flipTo(window.flipCurrent - 1);
+        }
+      }, { passive: true });
+    }
+
+    // ============================================================
+    //  渲染：普通作品（章节式）
+    // ============================================================
+    function renderRegular(work) {
+      const idx = workOrder.indexOf(work.id);
+      const prevId = idx > 0 ? workOrder[idx - 1] : null;
+      const nextId = idx < workOrder.length - 1 ? workOrder[idx + 1] : null;
+      const prevWork = prevId ? worksData[prevId] : null;
+      const nextWork = nextId ? worksData[nextId] : null;
+
+      let sectionsHtml = '';
+      if (work.sections) {
+        sectionsHtml = work.sections.map((s, i) => {
+          // 支持三种格式：{ video }、{ image }、{ title, body }
+          if (s.video) {
+            // poster：仅当用户明确指定 s.poster 时才设置，否则让浏览器自动展示第一帧
+            const posterAttr = s.poster ? `poster="${s.poster}"` : '';
+            return `
+              <section class="work-section bg-glow" id="s${i}">
+                <div style="position:relative;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:#000;">
+                  <video controls preload="auto" playsinline
+                         style="width:100%;display:block;"
+                         ${posterAttr}
+                         onerror="this.insertAdjacentHTML('afterend','<p style=&quot;color:#ff6b6b;font-size:0.8125rem;padding:16px;&quot;>⚠️ 视频加载失败，请检查文件格式是否为 H.264（.mp4）。当前文件可能无法在浏览器中播放。</p>')">
+                    <source src="${s.video}" type="video/mp4">
+                    <p style="color:#ff6b6b;padding:16px;">您的浏览器不支持视频播放，请升级浏览器。</p>
+                  </video>
+                </div>
+                ${s.caption ? `<p style="text-align:center;color:rgba(255,255,255,0.5);font-size:0.8125rem;margin-top:12px;font-weight:300;">${s.caption}</p>` : ''}
+              </section>
+            `;
+          } else if (s.image) {
+            // 图片章节
+            return `
+              <section class="work-section bg-glow" id="s${i}">
+                <img src="${s.image}" alt="${s.title || work.title + ' 第' + (i+1) + '部分'}" style="width:100%;border-radius:8px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;" data-lightbox loading="lazy" />
+                ${s.caption ? `<p style="text-align:center;color:rgba(255,255,255,0.5);font-size:0.8125rem;margin-top:12px;font-weight:300;">${s.caption}</p>` : ''}
+              </section>
+            `;
+          } else {
+            // 文字章节
+            return `
+              <section class="work-section bg-glow" id="s${i}">
+                <h2 class="work-section__title">${s.title}</h2>
+                <div class="work-section__body"><p>${s.body}</p></div>
+              </section>
+            `;
+          }
+        }).join('');
+      }
+
+      // 预览图（2列并排）
+      let previewHtml = '';
+      if (work.previewImages && work.previewImages.length > 0) {
+        previewHtml = `<div class="bg-glow" style="margin-top:40px;"><div class="preview-grid">${work.previewImages.map(src => `<img src="${src}" alt="" data-lightbox loading="lazy">`).join('')}</div></div>`;
+      }
+
+      // 图片画廊（兼容 images 和 pages 两种写法，支持 emoji-grid 布局，支持 3D 模型按钮）
+      let galleryHtml = '';
+      const galleryImages = work.images || work.pages || [];
+      if (galleryImages.length > 0) {
+        const gridClass = work.layout === 'emoji-grid' ? 'emoji-grid' : 'image-grid';
+        const imagesHtml = galleryImages.map(src => {
+          if (work.modelMap && work.modelMap[src]) {
+            return `<div class="img-with-model">
+              <img src="${src}" alt="" data-lightbox loading="lazy">
+              <button class="model-btn" onclick="open3DViewer('${work.modelMap[src]}')">▸ 点击查看3D模型</button>
+            </div>`;
+          }
+          return `<img src="${src}" alt="" data-lightbox loading="lazy">`;
+        }).join('');
+        galleryHtml = `<div class="bg-glow" style="margin-top:40px;"><div class="${gridClass}">${imagesHtml}</div></div>`;
+      }
+
+      const html = `
+        <!-- 面包屑 -->
+        <div style="margin-bottom:32px;">
+          <a href="index.html" style="color:rgba(255,255,255,0.5);text-decoration:none;">首页</a>
+          <span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span>
+          <a href="works.html" style="color:rgba(255,255,255,0.5);text-decoration:none;">作品</a>
+          <span style="color:rgba(255,255,255,0.3);margin:0 4px;">/</span>
+          <span style="color:#FFFFFF;">${work.title}</span>
+        </div>
+
+        <!-- 封面 -->
+        ${work.cover ? `<div style="margin-bottom:80px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);">
+          <img src="${work.cover}" alt="${work.title}" style="width:100%;display:block;" />
+        </div>` : ''}
+
+        <!-- 概述 -->
+        <div class="work-detail__overview">
+          <div>
+            <h1 style="font-size:clamp(1.5rem,3vw,2.75rem);font-weight:300;line-height:1.25;letter-spacing:0.01em;margin-bottom:16px;color:#FFFFFF;">${work.title}</h1>
+            <p class="subtitle">${work.subtitle}</p>
+          </div>
+          <div class="work-detail__meta">
+            ${work.meta.map(m => `
+              <div class="meta-item">
+                <h4>${m.label}</h4>
+                <p>${Array.isArray(m.value) ? m.value.map(t => `<span class="tool-icon">${t}</span>`).join('') : m.value}</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${sectionsHtml}
+        ${previewHtml}
+        ${galleryHtml}
+
+        <!-- 上一篇/下一篇 -->
+        <div class="work-nav">
+          ${prevWork ? `
+            <a href="work-detail.html?id=${prevId}" class="work-nav__item">
+              <div class="work-nav__label">← 上一篇</div>
+              <div class="work-nav__title">${prevWork.title}</div>
+            </a>
+          ` : '<div></div>'}
+          ${nextWork ? `
+            <a href="work-detail.html?id=${nextId}" class="work-nav__item work-nav__item--next">
+              <div class="work-nav__label">下一篇 →</div>
+              <div class="work-nav__title">${nextWork.title}</div>
+            </a>
+          ` : '<div></div>'}
+        </div>
+      `;
+
+      document.getElementById('work-content').innerHTML = html;
+
+      // 初始化 Lightbox
+      initLightbox();
+
+      // 检测视频是否能正常加载
+      document.querySelectorAll('video[controls]').forEach(v => {
+        v.addEventListener('error', () => {
+          const msg = document.createElement('p');
+          msg.style.cssText = 'color:#ff6b6b;font-size:0.8125rem;padding:12px 16px;background:rgba(255,100,100,0.08);border-radius:6px;margin-top:12px;';
+          msg.innerHTML = '⚠️ 视频加载失败。请确认视频文件编码为 <b>H.264 (AVC)</b>，浏览器不支持 H.265/HEVC 格式。建议使用 HandBrake 或剪映导出为 H.264 .mp4。';
+          v.parentElement.appendChild(msg);
+        });
+        // 能播放时日志输出，方便调试
+        v.addEventListener('loadeddata', () => {
+          console.log('✅ 视频加载成功：' + v.currentSrc);
+        });
+      });
+    }
+
+    // ============================================================
+    //  Lightbox（复用）
+    // ============================================================
+    let lbImgs = [], lbIdx = 0;
+    function initLightbox() {
+      const lb = document.getElementById('lightbox');
+      const lbImg = document.getElementById('lightbox-img');
+      document.querySelectorAll('[data-lightbox]').forEach((img, i) => {
+        img.style.cursor = 'pointer';
+        img.addEventListener('click', () => {
+          lbImgs = [...document.querySelectorAll('[data-lightbox]')];
+          lbIdx = i;
+          lbImg.src = lbImgs[i].src;
+          lb.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        });
+      });
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function lbNav(d) {
+      lbIdx = (lbIdx + d + lbImgs.length) % lbImgs.length;
+      document.getElementById('lightbox-img').src = lbImgs[lbIdx].src;
+    }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lbNav(-1);
+      if (e.key === 'ArrowRight') lbNav(1);
+    });
+    document.getElementById('lightbox').addEventListener('click', e => {
+      if (e.target === document.getElementById('lightbox')) closeLightbox();
+    });
+
+    // ============================================================
+    //  初始化
+    // ============================================================
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id') || 'energy';
+      const work = worksData[id];
+      if (!work) {
+        document.getElementById('work-content').innerHTML = '<p style="color:rgba(255,255,255,0.5);">未找到该作品。</p>';
+        return;
+      }
+      work.id = id; // 方便内部使用
+
+      if (work.type === 'catalog') {
+        renderCatalog(work);
+      } else {
+        renderRegular(work);
+      }
+    })();
+
+    // ========== 3D 模型查看器 ==========
+    function open3DViewer(modelPath) {
+      const modal = document.getElementById('modelViewerModal');
+      const viewer = document.getElementById('modelViewer');
+      const status = document.getElementById('modelStatus');
+      if (status) status.textContent = '正在加载 3D 模型...';
+      viewer.src = modelPath;
+      modal.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+
+      function onLoad() {
+        if (status) status.textContent = '';
+        viewer.removeEventListener('load', onLoad);
+        viewer.removeEventListener('error', onError);
+      }
+      function onError(e) {
+        if (status) status.innerHTML = '3D 模型加载失败，请确认：<br>1. 文件格式是否为标准 .glb/.gltf<br>2. 本地服务器是否已启动（python portfolio-serve.py）<br>3. 浏览器控制台查看详细错误';
+        console.error('3D 模型加载失败:', e);
+        viewer.removeEventListener('load', onLoad);
+        viewer.removeEventListener('error', onError);
+      }
+      viewer.addEventListener('load', onLoad, { once: true });
+      viewer.addEventListener('error', onError, { once: true });
+    }
+    function close3DViewer() {
+      const modal = document.getElementById('modelViewerModal');
+      const viewer = document.getElementById('modelViewer');
+      modal.style.display = 'none';
+      viewer.src = '';
+      document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if(e.key === 'Escape') close3DViewer(); });
+  </script>
+  <!-- 3D 模型查看器 -->
+  <div id="modelViewerModal">
+    <button class="model-close-btn" onclick="close3DViewer()">✕</button>
+    <div style="width:100%;height:100%;display:flex;flex-direction:column;">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;position:relative;">
+        <model-viewer id="modelViewer" alt="3D 模型" auto-rotate camera-controls>
+        </model-viewer>
+        <div id="modelStatus" style="position:absolute;bottom:60px;left:0;right:0;text-align:center;color:rgba(255,255,255,0.6);font-size:0.8125rem;"></div>
+      </div>
+      <p class="model-hint">拖拽旋转 · 滚轮缩放 · 右键平移 · ESC 关闭</p>
+    </div>
+  </div>
+
+</body>
+</html>
